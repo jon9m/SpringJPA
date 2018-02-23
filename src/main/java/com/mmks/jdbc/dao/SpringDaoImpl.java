@@ -1,60 +1,43 @@
 package com.mmks.jdbc.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.mmks.jdbc.model.Circle;
 
 @Component
 public class SpringDaoImpl {
-	
+
 	@Autowired
 	private DataSource datasource;
-	
+
+	private JdbcTemplate jdbcTemplate = new JdbcTemplate();
+
 	public List<Circle> getCircles(int circleId) {
 
-		PreparedStatement ps = null;
-		Connection conn = null;
-		ResultSet rs = null;
 		List<Circle> circles = new ArrayList<Circle>();
 
-		try {
+		// String query = "select * from circle where circle_id=?";
+		String query = "select * from circle where circle_id > ?";
 
-			conn = datasource.getConnection();
-			
-			// String query = "select * from circle where circle_id=?";
-			String query = "select * from circle where circle_id>?";
-			ps = conn.prepareStatement(query);
-			ps.setInt(1, circleId);
+		jdbcTemplate.setDataSource(datasource);
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(query, circleId);
 
-			rs = ps.executeQuery();
-
-			while (rs.next()) {
-				circles.add(new Circle(rs.getInt(1), rs.getString(2)));
-			}
-
-			return circles;
-
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				ps.close();
-				rs.close();
-				conn.close();
-			} catch (SQLException e) {
-				throw new RuntimeException(e);
-			}
+		for (Map row : rows) {
+			Circle circle = new Circle();
+			circle.setId((Integer) (row.get("circle_id")));
+			circle.setName((String) row.get("name"));
+			circles.add(circle);
 		}
+
+		return circles;
 	}
 
 	public DataSource getDatasource() {
@@ -64,6 +47,12 @@ public class SpringDaoImpl {
 	public void setDatasource(DataSource datasource) {
 		this.datasource = datasource;
 	}
-	
-	
+
+	public JdbcTemplate getJdbcTemplate() {
+		return jdbcTemplate;
+	}
+
+	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
 }
