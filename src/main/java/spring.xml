@@ -32,4 +32,12 @@
 		<property name="dataSource" ref="datasouorce"/>
 	</bean>
 
+	<bean id="namedParameterjdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+		<constructor-arg index="0" ref="datasouorce"/>			
+	</bean>
+	
+	<!-- <bean id="jdbcDaoSupportImpl" class="com.mmks.jdbc.dao.SimpleJdbcDaoImpl">
+		<property name="dataSource" ref="datasouorce"/>
+	</bean> -->
+	
 </beans>

@@ -3,22 +3,29 @@ package com.mmks.jdbc.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.mmks.jdbc.model.Circle;
 
-@Component
+@Component("springDaoImpl")
 public class SpringDaoImpl {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
-
+	
+	@Autowired
+	private NamedParameterJdbcTemplate namedParameterjdbcTemplate;
+	
+	
+	
 	public List<Circle> getCircles(int circleId) {
 
 		List<Circle> circles = new ArrayList<Circle>();
@@ -87,5 +94,16 @@ public class SpringDaoImpl {
 		String query = "insert into circle values(?, ?) " + "ON CONFLICT (circle_id) DO NOTHING;";
 		jdbcTemplate.update(query, new Object[] { circle.getId(), circle.getName() });
 
+	}
+	
+	
+	public void insertNamedParameterCircle(Circle circle) {
+		String query = "insert into circle values(:id, :name) " + "ON CONFLICT (circle_id) DO NOTHING;";
+		
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("id", circle.getId());
+		paramMap.put("name", circle.getName());
+		
+		namedParameterjdbcTemplate.update(query,  paramMap);		
 	}
 }
