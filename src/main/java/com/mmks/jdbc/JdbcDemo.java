@@ -22,6 +22,10 @@ public class JdbcDemo {
 		System.out.println(circles);
 		
 		System.out.println("Count " + dao.getCircleCount(7));
+		
+		for (int j = 120; j < 130; j++) {
+			dao.insertCircle(new Circle(j, "Circle name " + j));
+		}		
 
 	}
 }

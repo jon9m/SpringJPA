@@ -81,4 +81,11 @@ public class SpringDaoImpl {
 			return circle;
 		}
 	}
+
+	// Insert opertations
+	public void insertCircle(Circle circle) {
+		String query = "insert into circle values(?, ?) " + "ON CONFLICT (circle_id) DO NOTHING;";
+		jdbcTemplate.update(query, new Object[] { circle.getId(), circle.getName() });
+
+	}
 }
